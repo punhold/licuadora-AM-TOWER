@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>🧃 Licuadora DRC Movil</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    /* ===== SPLASH ===== */
+    #splash{
+      position:fixed;inset:0;z-index:9999;
+      background:#0a1628;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      font-family:'Nunito',sans-serif;
+      transition:opacity .6s ease, visibility .6s ease;
+    }
+    #splash.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+    #splash-particles{ position:absolute;inset:0;pointer-events:none; }
+    .sp{ position:absolute;border-radius:50%;opacity:0;animation:spFloat linear infinite; }
+    @keyframes spFloat{
+      0%{transform:translateY(100%) scale(0);opacity:0}
+      10%{opacity:.55}90%{opacity:.15}
+      100%{transform:translateY(-120%) scale(1.2);opacity:0}
+    }
+    #splash-logo{ display:flex;flex-direction:column;align-items:center;gap:12px;animation:splashIn .7s cubic-bezier(.2,1.2,.4,1) .2s both; }
+    @keyframes splashIn{ from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    #splash-icon{
+      width:80px;height:80px;
+      background:linear-gradient(135deg,#0f2d1a,#0d2235);
+      border:1.5px solid #1a3a2a;border-radius:22px;
+      display:flex;align-items:center;justify-content:center;font-size:40px;
+      animation:splashIconPulse 3s ease-in-out 1s infinite;
+    }
+    @keyframes splashIconPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}50%{box-shadow:0 0 0 14px rgba(34,197,94,.07)}}
+    #splash-name{ font-size:2rem;font-weight:800;letter-spacing:2px;color:#f1f5f9;text-transform:uppercase; }
+    #splash-sub{ font-size:.85rem;font-weight:600;color:#475569;letter-spacing:.5px;margin-top:-8px; }
+    #splash-steps{ margin-top:32px;display:flex;flex-direction:column;gap:10px;width:260px;animation:splashIn .5s ease .6s both; }
+    .ss{ display:flex;align-items:center;gap:10px;opacity:.25;transition:opacity .4s; }
+    .ss.active{ opacity:1; }
+    .ss.done{ opacity:.5; }
+    .ss-icon{
+      width:20px;height:20px;border-radius:50%;border:1.5px solid #334155;
+      display:flex;align-items:center;justify-content:center;
+      flex-shrink:0;font-size:10px;color:#64748b;transition:all .4s;
+    }
+    .ss.active .ss-icon{ border-color:#22c55e;color:#22c55e;animation:ssPulse .8s ease-in-out infinite; }
+    .ss.done .ss-icon{ border-color:#1d4e35;background:#0f2d1a;color:#22c55e; }
+    @keyframes ssPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}50%{box-shadow:0 0 0 5px rgba(34,197,94,.15)}}
+    .ss-label{ font-size:.82rem;font-weight:700;color:#94a3b8;letter-spacing:.2px; }
+    .ss.active .ss-label{ color:#e2e8f0; }
+    .ss.done .ss-label{ color:#4a6a5a; }
+    #splash-spin-wrap{ margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:10px;animation:splashIn .5s ease .8s both; }
+    #splash-spinner{ width:28px;height:28px;border:2.5px solid #1e3a2a;border-top-color:#22c55e;border-radius:50%;animation:ssSpin .8s linear infinite; }
+    @keyframes ssSpin{ to{transform:rotate(360deg)} }
+    #splash-spin-label{ font-size:.78rem;font-weight:700;color:#334155;letter-spacing:.5px;text-transform:uppercase;transition:opacity .3s; }
+    #splash-ready{ margin-top:20px;font-size:.9rem;font-weight:800;color:#22c55e;letter-spacing:.5px;opacity:0;transition:opacity .5s; }
+
+    /* ===== LOADING LICUADORA ===== */
+    #blender-scene{ display:flex;flex-direction:column;align-items:center;padding:.5rem 0 1rem;gap:.5rem; }
+    #blender-phrase{ height:22px;font-size:13px;font-style:italic;color:#94a3b8;transition:opacity .3s; }
+    @keyframes itemFall{
+      0%{transform:translateY(-90px);opacity:0}
+      35%{opacity:1}
+      88%{transform:translateY(var(--fall-end));opacity:.9}
+      100%{transform:translateY(var(--fall-end));opacity:0}
+    }
+    @keyframes bubbleUp{
+      0%{transform:translateY(0);opacity:0}15%{opacity:.7}
+      100%{transform:translateY(-70px);opacity:0}
+    }
+    @keyframes splashIn2{ 0%{transform:scale(0);opacity:1} 100%{transform:scale(1.6);opacity:0} }
+  </style>
+</head>
+<body>
+
+<!-- ===== SPLASH SCREEN ===== -->
+<div id="splash">
+  <div id="splash-particles"></div>
+  <div id="splash-logo">
+    <div id="splash-icon">🧃</div>
+    <div id="splash-name">Licuadora</div>
+    <div id="splash-sub">DRC Movil</div>
+  </div>
+  <div id="splash-steps">
+    <div class="ss" id="ss0"><div class="ss-icon">⬡</div><div class="ss-label">Iniciando aplicación</div></div>
+    <div class="ss" id="ss1"><div class="ss-icon">⬡</div><div class="ss-label">Conectando backend</div></div>
+    <div class="ss" id="ss2"><div class="ss-icon">⬡</div><div class="ss-label">Verificando acceso Gmail</div></div>
+    <div class="ss" id="ss3"><div class="ss-icon">⬡</div><div class="ss-label">Cargando bandeja de entrada</div></div>
+    <div class="ss" id="ss4"><div class="ss-icon">⬡</div><div class="ss-label">Calibrando la licuadora</div></div>
+  </div>
+  <div id="splash-spin-wrap">
+    <div id="splash-spinner"></div>
+    <div id="splash-spin-label">cargando...</div>
+  </div>
+  <div id="splash-ready">¡Lista para licuar! 🧃</div>
+</div>
+
+<!-- ===== APP ===== -->
+<header class="top">
+  <div class="brand">
+    <h1>🧃 LICUADORA</h1>
+    <p class="subtitle">Mezclando mails y sacando jugo operativo</p>
+  </div>
+</header>
+
+<main class="card">
+  <div id="authBar" class="authBar">
+    <div id="authStatus" class="authStatus checking">
+      <span class="dot"></span>
+      <span id="authText">Verificando conexión...</span>
+    </div>
+    <button id="btnAuth" class="btnSecondary hidden">🔗 Conectar Gmail</button>
+  </div>
+  <div class="uploader">
+    <div class="dateGroup">
+      <label for="fechaDesde">Desde</label>
+      <input type="date" id="fechaDesde" />
+    </div>
+    <div class="dateGroup">
+      <label for="fechaHasta">Hasta</label>
+      <input type="date" id="fechaHasta" />
+    </div>
+    <button id="btnProcesar" disabled>Procesar</button>
+  </div>
+  <div class="tips">
+    <div class="pill">📅 Seleccioná el rango de fechas y presioná <strong>Procesar</strong> para analizar los casos del período</div>
+    <div class="pill">⏱️ <strong>Demora:</strong> caso abierto que aún no registra cierre en el período analizado</div>
+    <div class="pill">🔁 <strong>Reiterado:</strong> CI con dos o más aperturas de casos en los últimos 30 días</div>
+    <div class="pill">💥 <strong>Impacto post reparación:</strong> caso abierto en un CI distinto dentro de las 24 hs posteriores a un cierre</div>
+    <div class="pill">✅ <strong>Cerrados:</strong> casos con fecha de cierre registrada en los últimos 7 días</div>
+  </div>
+</main>
+
+<!-- ===== LOADING LICUADORA ===== -->
+<section id="loading" class="hidden loadingWrap">
+  <p id="contador" class="muted"></p>
+  <div id="blender-scene">
+    <svg id="bsvg" width="320" height="290" viewBox="0 0 320 290" style="overflow:visible;transition:transform .05s linear">
+      <defs>
+        <clipPath id="vc"><path d="M105 98 L90 232 Q90 244 100 244 L220 244 Q230 244 230 232 L215 98 Z"/></clipPath>
+        <linearGradient id="blg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4ade80" stop-opacity=".95"/>
+          <stop offset="100%" stop-color="#15803d"/>
+        </linearGradient>
+        <linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1e293b"/>
+          <stop offset="100%" stop-color="#0f172a"/>
+        </linearGradient>
+        <linearGradient id="bgg" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#fff" stop-opacity=".07"/>
+          <stop offset="50%" stop-color="#fff" stop-opacity=".02"/>
+          <stop offset="100%" stop-color="#fff" stop-opacity=".05"/>
+        </linearGradient>
+      </defs>
+      <rect x="88" y="244" width="144" height="30" rx="9" fill="url(#bbg)" stroke="#334155" stroke-width="1.5"/>
+      <circle cx="160" cy="259" r="8" fill="#0f172a" stroke="#22c55e" stroke-width="1.5"/>
+      <circle cx="160" cy="259" r="3" fill="#22c55e"/>
+      <path d="M105 98 L90 232 Q90 244 100 244 L220 244 Q230 244 230 232 L215 98 Z" fill="#0b1628" stroke="#334155" stroke-width="2"/>
+      <g clip-path="url(#vc)">
+        <rect id="bliq" x="90" y="244" width="140" height="0" fill="url(#blg)" rx="3"/>
+      </g>
+      <g id="bbubbles" clip-path="url(#vc)" opacity="0">
+        <circle cx="135" cy="230" r="4" fill="#4ade80" opacity=".5" style="animation:bubbleUp 1.1s ease-out infinite"/>
+        <circle cx="162" cy="236" r="3" fill="#86efac" opacity=".4" style="animation:bubbleUp 1.35s ease-out .28s infinite"/>
+        <circle cx="188" cy="228" r="5" fill="#4ade80" opacity=".35" style="animation:bubbleUp 1s ease-out .55s infinite"/>
+        <circle cx="150" cy="233" r="2.5" fill="#bbf7d0" opacity=".4" style="animation:bubbleUp .9s ease-out .7s infinite"/>
+      </g>
+      <g id="bblades" style="transform-origin:160px 222px" opacity=".65">
+        <line x1="142" y1="222" x2="178" y2="222" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/>
+        <line x1="160" y1="204" x2="160" y2="240" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
+      </g>
+      <path d="M105 98 L90 232 Q90 244 100 244 L220 244 Q230 244 230 232 L215 98 Z" fill="url(#bgg)"/>
+      <line x1="107" y1="108" x2="95" y2="220" stroke="#fff" stroke-width=".5" opacity=".1"/>
+      <line x1="213" y1="108" x2="225" y2="220" stroke="#fff" stroke-width=".5" opacity=".1"/>
+      <rect x="103" y="95" width="114" height="6" rx="2" fill="#334155" stroke="#475569" stroke-width=".5"/>
+      <g id="blid" style="opacity:0;transform:translateY(-28px);transition:transform .55s cubic-bezier(.2,1.3,.4,1),opacity .3s">
+        <path d="M103 96 Q103 80 160 78 Q217 80 217 96 Z" fill="#2d3f55" stroke="#475569" stroke-width="1.5"/>
+        <rect x="146" y="70" width="28" height="11" rx="5.5" fill="#3d5068" stroke="#64748b" stroke-width="1"/>
+        <rect x="152" y="65" width="16" height="7" rx="3.5" fill="#4a5f78"/>
+      </g>
+      <g id="bitemsG"></g>
+    </svg>
+    <div id="blender-phrase"></div>
+  </div>
+</section>
+
+<!-- ===== RESULTADOS ===== -->
+<section id="resultados" class="hidden">
+  <div class="execSummary">
+    <div class="kpi" id="kpiDemoras"><div class="kpiNum">0</div><div class="kpiLabel">⏱️ Demoras</div></div>
+    <div class="kpi" id="kpiReiterados"><div class="kpiNum">0</div><div class="kpiLabel">🔁 Reiterados</div></div>
+    <div class="kpi" id="kpiImpacto"><div class="kpiNum">0</div><div class="kpiLabel">💥 Impactos post-rep.</div></div>
+    <div class="kpi" id="kpiCerrados"><div class="kpiNum">0</div><div class="kpiLabel">✅ Cerrados 7d</div></div>
+  </div>
+  <div class="filterBar">
+    <input type="text" id="filtroCI" placeholder="🔍 Filtrar por CI..." class="filterInput" />
+    <button id="btnExport" class="btnSecondary">⬇️ Exportar CSV</button>
+  </div>
+  <div class="resultsGrid">
+    <div class="result-card">
+      <div class="sectionTitle"><h2>⏱️ Demoras</h2><span id="demorasBadge" class="badge">0</span></div>
+      <p class="muted">Casos abiertos aún sin cierre</p>
+      <div id="demorasContainer" class="block"></div>
+    </div>
+    <div class="result-card">
+      <div class="sectionTitle"><h2>🔁 Reiterados (30 días)</h2><span id="reiteradosBadge" class="badge">0</span></div>
+      <p class="muted">CI con múltiples aperturas en los últimos 30 días</p>
+      <div id="reiteradosContainer" class="block"></div>
+    </div>
+    <div class="result-card">
+      <div class="sectionTitle"><h2>💥 Impacto post reparación (24 hs)</h2><span id="impactoBadge" class="badge">0</span></div>
+      <p class="muted">Aperturas en CI distinto dentro de 24 hs de un cierre</p>
+      <div id="impactoContainer" class="block"></div>
+    </div>
+    <div class="result-card">
+      <div class="sectionTitle"><h2>✅ Cerrados últimos 7 días</h2><span id="cerradosBadge" class="badge">0</span></div>
+      <p class="muted">Basado en fecha de cierre del mail</p>
+      <div id="cerradosContainer" class="block"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer muted">Licuadora v2 — DRC Movil 🧃</footer>
+
+<script>
+// =====================
+// SPLASH
+// =====================
+(function(){
+  const colors=["#22c55e","#4ade80","#60a5fa","#818cf8","#86efac"];
+  const pc=document.getElementById("splash-particles");
+  for(let i=0;i<22;i++){
+    const p=document.createElement("div");p.className="sp";
+    const s=3+Math.random()*5;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;bottom:0;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${4+Math.random()*5}s;animation-delay:${Math.random()*4}s`;
+    pc.appendChild(p);
+  }
+})();
+
+
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+async function runSplash(){
+  const steps = [
+    {id:"ss0", label:"Iniciando aplicación",       dur:500},
+    {id:"ss1", label:"Conectando backend",          dur:0,  real:true},
+    {id:"ss2", label:"Verificando acceso Gmail",    dur:0,  real:true},
+    {id:"ss3", label:"Cargando bandeja de entrada", dur:600},
+    {id:"ss4", label:"Calibrando la licuadora",     dur:500},
+  ];
+  const spinLabel = document.getElementById("splash-spin-label");
+  const spinner   = document.getElementById("splash-spinner");
+  const readyMsg  = document.getElementById("splash-ready");
+
+  await wait(300);
+
+  let authOk = false;
+
+  for(const s of steps){
+    const row  = document.getElementById(s.id);
+    const icon = row.querySelector(".ss-icon");
+    row.classList.add("active");
+    spinLabel.textContent = s.label + "...";
+
+    if(s.real && s.id === "ss1"){
+      // ping real al backend
+      try{
+        await fetch("https://licuadora-at.duckdns.org/auth/status");
+        await wait(400);
+      } catch(e){ await wait(600); }
+    } else if(s.real && s.id === "ss2"){
+      // check auth real
+      try{
+        const r = await fetch("https://licuadora-at.duckdns.org/auth/status");
+        const d = await r.json();
+        authOk = d.authorized;
+        await wait(400);
+      } catch(e){ await wait(500); }
+    } else {
+      await wait(s.dur);
+    }
+
+    row.classList.remove("active");
+    row.classList.add("done");
+    icon.textContent = "✓";
+  }
+
+  await wait(200);
+  spinLabel.style.opacity = "0";
+  await wait(300);
+  spinner.style.animation = "none";
+  spinner.style.border = "2.5px solid #22c55e";
+  spinner.innerHTML = `<svg width="14" height="14" viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  readyMsg.style.opacity = "1";
+
+  await wait(900);
+  document.getElementById("splash").classList.add("hide");
+
+  // propagar estado auth a la app
+  window._splashAuthOk = authOk;
+  window._splashDone = true;
+  window.dispatchEvent(new Event("splashDone"));
+}
+
+runSplash();
+</script>
+
+<script src="js/app.js"></script>
+</body>
+</html>
